@@ -241,7 +241,7 @@ function ChannelInputPanel({channel,inputs,onChange,region,country,rateLabel}){
           <InputField label={channel==="whatsapp"?"Read Rate":"Open Rate"} value={inputs.openRate} onChange={v=>u("openRate",v)} suffix="%" tooltip={`Benchmark: ${bench.openRate}%`} min={0} max={100}/>
           <InputField label="Click-Through Rate" value={inputs.ctr} onChange={v=>u("ctr",v)} suffix="%" tooltip={`% of readers who click. Benchmark: ${bench.ctr}%`} min={0} max={100}/>
           <InputField label={rateLabel||"Conversion Rate"} value={inputs.convRate} onChange={v=>u("convRate",v)} suffix="%" tooltip="% of clickers who convert (post-click rate)" min={0} max={100}/>
-          <InputField label="Opt-Out Rate" value={inputs.optOutRate} onChange={v=>u("optOutRate",v)} suffix="%" tooltip={`Benchmark: ${bench.optOutRate}%`} min={0} max={100}/>
+          {/* Opt-Out Rate hidden for simplicity */}
         </div>
       </div>}
     </div>
@@ -255,7 +255,7 @@ function FunnelViz({data,color,label,maxMessages}){
 }
 
 function ScorecardTable({channels,data}){
-  const rows=[{key:"messages",label:"Messages Sent",f:v=>fmt(v)},{key:"deliveryRate",label:"Delivery Rate",f:v=>pct(v),h:true},{key:"delivered",label:"Delivered",f:v=>fmt(v),h:true},{key:"openRate",label:"Open / Read Rate",f:v=>pct(v),h:true},{key:"ctr",label:"CTR",f:v=>pct(v),h:true},{key:"convRate",label:"Conversion Rate",f:v=>pct(v,2),h:true},{key:"conversions",label:"Conversions / Mo",f:v=>fmt(v),h:true},{key:"revenue",label:"Revenue / Mo",f:v=>dm(v),h:true},{key:"spend",label:"Spend / Mo",f:v=>dm(v),h:false},{key:"roi",label:"ROI",f:v=>v.toFixed(1)+"\u00D7",h:true},{key:"cpConv",label:"Cost / Conversion",f:v=>dm(v),h:false},{key:"optOutRate",label:"Opt-Out Rate",f:v=>pct(v,2),h:false}];
+  const rows=[{key:"messages",label:"Messages Sent",f:v=>fmt(v)},{key:"deliveryRate",label:"Delivery Rate",f:v=>pct(v),h:true},{key:"delivered",label:"Delivered",f:v=>fmt(v),h:true},{key:"openRate",label:"Open / Read Rate",f:v=>pct(v),h:true},{key:"ctr",label:"CTR",f:v=>pct(v),h:true},{key:"convRate",label:"Conversion Rate",f:v=>pct(v,2),h:true},{key:"conversions",label:"Conversions / Mo",f:v=>fmt(v),h:true},{key:"revenue",label:"Revenue / Mo",f:v=>dm(v),h:true},{key:"spend",label:"Spend / Mo",f:v=>dm(v),h:false},{key:"roi",label:"ROI",f:v=>v.toFixed(1)+"\u00D7",h:true},{key:"cpConv",label:"Cost / Conversion",f:v=>dm(v),h:false}];
   const wins={};channels.forEach(c=>wins[c]=0);
   rows.forEach(r=>{if(r.key==="messages")return;let best=null,bv=r.h?-Infinity:Infinity;channels.forEach(c=>{const v=data[c]?.[r.key]??0;if((r.h&&v>bv)||(!r.h&&v<bv)){bv=v;best=c}});if(best)wins[best]++});
   const th={padding:"10px 14px",textAlign:"right",fontFamily:T.fontMono,fontSize:13,fontWeight:500,whiteSpace:"nowrap"};
@@ -586,7 +586,7 @@ function ExportModal({onClose,allData,channels,dealValue,country,industry,client
 
   const genCSV=async()=>{try{setSt(s=>({...s,csv:"loading"}));setErr("");
     const rows=[["Metric",...channels.map(c=>CH_CFG[c].label)]];
-    const metrics=[["Messages Sent",c=>fmt(c.messages)],["Delivery Rate",c=>pct(c.deliveryRate)],["Open/Read Rate",c=>pct(c.openRate)],["CTR",c=>pct(c.ctr)],["Conversion Rate",c=>pct(c.convRate,2)],["Conversions/Mo",c=>fmt(c.conversions)],["Revenue/Mo",c=>"$"+c.revenue.toFixed(2)],["Spend/Mo",c=>"$"+c.spend.toFixed(2)],["ROI",c=>c.roi.toFixed(1)+"x"],["Cost/Conversion",c=>"$"+c.cpConv.toFixed(2)],["Rev/1K Msgs",c=>"$"+c.rev1k.toFixed(2)],["Opt-Out Rate",c=>pct(c.optOutRate,2)]];
+    const metrics=[["Messages Sent",c=>fmt(c.messages)],["Delivery Rate",c=>pct(c.deliveryRate)],["Open/Read Rate",c=>pct(c.openRate)],["CTR",c=>pct(c.ctr)],["Conversion Rate",c=>pct(c.convRate,2)],["Conversions/Mo",c=>fmt(c.conversions)],["Revenue/Mo",c=>"$"+c.revenue.toFixed(2)],["Spend/Mo",c=>"$"+c.spend.toFixed(2)],["ROI",c=>c.roi.toFixed(1)+"x"],["Cost/Conversion",c=>"$"+c.cpConv.toFixed(2)],["Rev/1K Msgs",c=>"$"+c.rev1k.toFixed(2)]];
     metrics.forEach(([label,fn])=>{rows.push([label,...channels.map(c=>fn(allData[c]))])});
     rows.push([]);rows.push(["Prepared for",name]);rows.push(["Country",country]);rows.push(["Industry",industry]);rows.push(["Deal Value","$"+dealValue]);
     const csv=rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("\n");
@@ -639,7 +639,7 @@ ${c?`<div class="card"><h2>Shift Simulator: ${chLabel} &rarr; WhatsApp</h2>
   const genSummary=async()=>{try{setSt(s=>({...s,txt:"loading"}));setErr("");
     let txt=`WHATSAPP ROI ANALYSIS\n${"=".repeat(50)}\nPrepared for: ${name}\nCountry: ${country} | Industry: ${industry}\nDeal Value: $${dealValue}\nDate: ${new Date().toLocaleDateString()}\n\n`;
     txt+=`CHANNEL COMPARISON\n${"-".repeat(50)}\n`;
-    channels.forEach(ch=>{const d=allData[ch];const cfg=CH_CFG[ch];txt+=`\n${cfg.label}:\n  Messages/Mo:     ${fmt(d.messages)}\n  Revenue/Mo:      ${fmtMoney(d.revenue)}\n  ROI:             ${d.roi.toFixed(1)}x\n  Conversions/Mo:  ${fmt(d.conversions)}\n  Cost/Conversion: ${fmtMoney(d.cpConv)}\n  Rev/1K Messages: ${fmtMoney(d.rev1k)}\n  CTR:             ${pct(d.ctr)}\n  Opt-Out Rate:    ${pct(d.optOutRate,2)}\n`});
+    channels.forEach(ch=>{const d=allData[ch];const cfg=CH_CFG[ch];txt+=`\n${cfg.label}:\n  Messages/Mo:     ${fmt(d.messages)}\n  Revenue/Mo:      ${fmtMoney(d.revenue)}\n  ROI:             ${d.roi.toFixed(1)}x\n  Conversions/Mo:  ${fmt(d.conversions)}\n  Cost/Conversion: ${fmtMoney(d.cpConv)}\n  Rev/1K Messages: ${fmtMoney(d.rev1k)}\n  CTR:             ${pct(d.ctr)}\n\n`});
     if(cc.length>0){txt+=`\nKEY INSIGHTS\n${"-".repeat(50)}\n`;cc.forEach(ch=>{const c=allData[ch];const rd=wa.revenue-c.revenue;txt+=`\nWhatsApp vs ${CH_CFG[ch].label}:\n  Revenue advantage: ${fmtMoney(rd)}/month (${fmtMoney(rd*12)}/year)\n  ROI advantage: ${(wa.roi-c.roi).toFixed(1)}x\n  Extra conversions: ${fmt(wa.conversions-c.conversions)}/month\n`})}
     txt+=`\nANNUAL PROJECTION\n${"-".repeat(50)}\n  WhatsApp: ${fmtMoney(wa.revenue*12)}\n`;
     cc.forEach(ch=>{txt+=`  ${CH_CFG[ch].label}: ${fmtMoney(allData[ch].revenue*12)}\n`});
@@ -1418,13 +1418,13 @@ export default function App(){
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
               <Icon name="calendar" size={20} color={T.green}/>
               <span style={{fontFamily:T.fontSora,fontWeight:700,fontSize:16,color:"#fff"}}>12-Month Projection</span>
-              <span style={{fontSize:11,color:T.textLight,marginLeft:"auto"}}>Accounts for opt-out decay</span>
+              <span style={{fontSize:11,color:T.textLight,marginLeft:"auto"}}>12-month projection</span>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:12}}>
               <div style={{background:"rgba(255,255,255,0.06)",borderRadius:T.radiusXs,padding:"12px 14px"}}>
                 <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Annual Revenue</div>
                 <div style={{fontSize:24,fontWeight:800,fontFamily:T.fontDisplay,color:T.green}}>{dm(annualCalc.totalRev)}</div>
-                <div style={{fontSize:11,color:T.textLight,marginTop:2}}>with opt-out decay</div>
+                <div style={{fontSize:11,color:T.textLight,marginTop:2}}>annual estimate</div>
               </div>
               <div style={{background:"rgba(255,255,255,0.06)",borderRadius:T.radiusXs,padding:"12px 14px"}}>
                 <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Annual Profit</div>
@@ -1447,12 +1447,10 @@ export default function App(){
           <InsightBox pills={[{label:"Revenue",value:dm(allR.whatsapp.revenue),icon:<Icon name="dollarSign" size={14}/>,color:T.green},{label:"ROI",value:allR.whatsapp.roi.toFixed(1)+"\u00D7",icon:<Icon name="trendingUp" size={14}/>,color:T.green},{label:"Conversions",value:fmt(allR.whatsapp.conversions),icon:<Icon name="target" size={14}/>,color:T.green}]} narrative={`Sending ${fmt(allR.whatsapp.messages)} WhatsApp messages across ${chInputs.whatsapp?.broadcastsPerMonth||4} broadcasts per month for ${displayName} in ${country} yields ${fmt(allR.whatsapp.conversions)} conversions and ${dm(allR.whatsapp.revenue)} in revenue. With a ${allR.whatsapp.roi.toFixed(1)}\u00D7 ROI, the annual revenue potential is ${dm(annualCalc?annualCalc.totalRev:allR.whatsapp.revenue*12)}.`}/>
           <div style={{marginTop:20}}><FunnelViz data={allR.whatsapp} color={T.green} label="whatsapp"/></div>
 
-          {/* Audience Health Summary */}
-          <InsightBox pills={[{label:"Monthly Churn",value:fmt(allR.whatsapp.moLost),icon:<Icon name="alertTriangle" size={14}/>,color:"#f87171"},{label:"Annual Churn",value:fmt(allR.whatsapp.yrLost),icon:<Icon name="alertTriangle" size={14}/>,color:"#f87171"},{label:"Revenue at Risk",value:dm(allR.whatsapp.revAtRisk),icon:<Icon name="alertTriangle" size={14}/>,color:"#fbbf24"}]} narrative={`At a ${pct(allR.whatsapp.optOutRate)} opt-out rate, you'll lose ~${fmt(allR.whatsapp.moLost)} subscribers monthly (${fmt(allR.whatsapp.yrLost)}/year). This puts ${dm(allR.whatsapp.revAtRisk)} in annual revenue at risk. Keeping opt-outs low through relevant, well-timed messaging protects your audience and long-term ROI.`} delay={0.1}/>
         </div>}
 
         {mode==="advanced"&&allR.whatsapp&&<div>
-          <TabBar tabs={["Funnel","Scorecard","Cost Efficiency","Shift Simulator","Audience Health","Scenarios"]} active={rTab} onChange={setRTab}/>
+          <TabBar tabs={["Funnel","Scorecard","Cost Efficiency","Shift Simulator","Scenarios"]} active={rTab} onChange={setRTab}/>
 
           {rTab===0&&<div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:12,marginBottom:20}}>
@@ -1476,9 +1474,7 @@ export default function App(){
 
           {rTab===3&&<div>{compChannels.map(ch=>{const c=allR[ch],w=allR.whatsapp;if(!c||!w)return null;return <Card key={ch} style={{marginBottom:16}}><ShiftSimulator waData={w} compData={c} compChannel={ch} dealValue={dealValue}/></Card>})}</div>}
 
-          {rTab===4&&<div>{compChannels.map(ch=>{const c=allR[ch],w=allR.whatsapp;if(!c||!w)return null;return <div key={ch} style={{marginBottom:20}}><h3 style={{fontFamily:T.fontDisplay,fontWeight:700,fontSize:16,marginBottom:12}}>WhatsApp vs {CH_CFG[ch].label}</h3><AudienceHealthPanel waData={w} compData={c} compChannel={ch} dealValue={dealValue}/></div>})}</div>}
-
-          {rTab===5&&<ScenarioCompare baseInputs={chInputs.whatsapp} region={region} countryData={countryData} industry={industry} indData={indData} dealValue={dealValue}/>}
+          {rTab===4&&<ScenarioCompare baseInputs={chInputs.whatsapp} region={region} countryData={countryData} industry={industry} indData={indData} dealValue={dealValue}/>}
 
           <MonthlyProjection waData={allR.whatsapp} compData={allR} channels={activeCh} dealValue={dealValue}/>
         </div>}
