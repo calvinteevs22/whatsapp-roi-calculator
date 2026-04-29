@@ -636,6 +636,132 @@ ${c?`<div class="card"><h2>Shift Simulator: ${chLabel} &rarr; WhatsApp</h2>
     setSt(s=>({...s,html:"done"}));
   }catch(e){setErr(`HTML: ${e.message}`);setSt(s=>({...s,html:null}))}};
 
+  const genPDF=async()=>{try{setSt(s=>({...s,pdf:"loading"}));setErr("");
+    const w=wa;if(!w){throw new Error("No WhatsApp data")}
+    const metrics=[
+      {l:"Monthly Revenue",v:fmtMoney(w.revenue),c:"#0d7a3e"},
+      {l:"Conversions / Mo",v:fmt(w.conversions),c:"#0d7a3e"},
+      {l:"ROI",v:w.roi.toFixed(1)+"x",c:"#0d7a3e"},
+      {l:"Cost / Conversion",v:fmtMoney(w.cpConv),c:"#475569"},
+      {l:"Monthly Spend",v:fmtMoney(w.spend),c:"#475569"},
+    ];
+    const annRev=w.revenue*12,annSpend=w.spend*12,annProfit=annRev-annSpend;
+    const funnelSteps=[
+      {n:"Messages Sent",v:fmt(w.messages)},
+      {n:"Delivered",v:fmt(w.delivered)},
+      {n:"Opened / Read",v:fmt(w.opened)},
+      {n:"Clicked",v:fmt(w.clicked)},
+      {n:"Converted",v:fmt(w.conversions)},
+    ];
+    const hasComp=cc.length>0;
+    const compRows=hasComp?channels.map(ch=>{const d=allData[ch];return{label:CH_CFG[ch].label,color:CH_CFG[ch].color,msgs:fmt(d.messages),dr:pct(d.deliveryRate),or:pct(d.openRate),ctr:pct(d.ctr),cv:pct(d.convRate,2),conv:fmt(d.conversions),rev:fmtMoney(d.revenue),spend:fmtMoney(d.spend),roi:d.roi.toFixed(1)+"x",cpconv:fmtMoney(d.cpConv)}}):[];
+    const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${name} - WhatsApp ROI Report</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4;margin:20mm 15mm}
+body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#1e293b;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{max-width:800px;margin:0 auto;padding:10px}
+.cover{background:linear-gradient(135deg,#075e30,#0d7a3e,#25D366);color:#fff;padding:50px 40px;border-radius:16px;margin-bottom:28px;position:relative;overflow:hidden}
+.cover::after{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.08)}
+.cover::before{content:'';position:absolute;right:60px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.05)}
+.cover h1{font-size:32px;font-weight:800;margin-bottom:6px;letter-spacing:-0.02em}
+.cover .sub{font-size:15px;opacity:0.85;margin-bottom:20px}
+.cover .meta{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;opacity:0.75}
+.cover .meta span{display:flex;align-items:center;gap:4px}
+.section{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;page-break-inside:avoid}
+.section h2{color:#0d7a3e;font-size:18px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #f0fdf4;display:flex;align-items:center;gap:8px}
+.section h2 .dot{width:8px;height:8px;border-radius:50%;background:#25D366;display:inline-block}
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:0}
+.metric{padding:16px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;text-align:center}
+.metric .label{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+.metric .value{font-size:22px;font-weight:800;letter-spacing:-0.02em}
+.funnel{margin:0}.funnel-step{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.funnel-bar{height:32px;border-radius:6px;display:flex;align-items:center;padding:0 12px;color:#fff;font-size:12px;font-weight:600;min-width:60px;transition:width 0.3s}
+.funnel-label{width:110px;font-size:12px;color:#64748b;text-align:right;flex-shrink:0;font-weight:500}
+.annual{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.annual-card{text-align:center;padding:18px;border-radius:10px;background:#f0fdf4;border:1px solid #bbf7d0}
+.annual-card .al{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+.annual-card .av{font-size:24px;font-weight:800;color:#0d7a3e}
+.annual-card .as{font-size:11px;color:#94a3b8;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f8fafc;color:#64748b;font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:0.04em}
+th,td{padding:10px 12px;text-align:right;border-bottom:1px solid #f1f5f9}
+th:first-child,td:first-child{text-align:left}
+tr:last-child td{border-bottom:none}
+.wa-highlight{color:#0d7a3e;font-weight:700}
+.footer{text-align:center;color:#94a3b8;font-size:11px;padding:20px 0;border-top:1px solid #f1f5f9;margin-top:10px}
+.insight-box{background:#0f172a;color:#cbd5e1;border-radius:10px;padding:18px 20px;margin-top:16px;font-size:13px;line-height:1.7}
+@media print{.section{box-shadow:none;break-inside:avoid}.cover{break-after:auto}}
+</style></head><body><div class="page">
+
+<div class="cover">
+  <h1>WhatsApp ROI Analysis</h1>
+  <div class="sub">Prepared for ${name}</div>
+  <div class="meta">
+    <span>${country}</span>
+    <span>${industry}</span>
+    <span>AOV: $${dealValue}</span>
+    <span>${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>Key Metrics</h2>
+  <div class="metrics">
+    ${metrics.map(m=>`<div class="metric"><div class="label">${m.l}</div><div class="value" style="color:${m.c}">${m.v}</div></div>`).join("")}
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>Conversion Funnel</h2>
+  <div class="funnel">
+    ${funnelSteps.map((s,i)=>{const pct=i===0?100:w.messages>0?([w.messages,w.delivered,w.opened,w.clicked,w.conversions][i]/w.messages*100):0;const opacity=1-i*0.15;return`<div class="funnel-step"><div class="funnel-label">${s.n}</div><div class="funnel-bar" style="width:${Math.max(pct,8)}%;background:rgba(37,211,102,${opacity})">${s.v}</div></div>`}).join("")}
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>12-Month Projection</h2>
+  <div class="annual">
+    <div class="annual-card"><div class="al">Annual Revenue</div><div class="av">${fmtMoney(annRev)}</div><div class="as">projected revenue</div></div>
+    <div class="annual-card"><div class="al">Annual Profit</div><div class="av" style="color:${annProfit>=0?'#0d7a3e':'#ef4444'}">${fmtMoney(annProfit)}</div><div class="as">revenue minus spend</div></div>
+    <div class="annual-card"><div class="al">Annual Spend</div><div class="av" style="color:#475569">${fmtMoney(annSpend)}</div><div class="as">total investment</div></div>
+  </div>
+</div>
+
+${hasComp?`<div class="section">
+  <h2><span class="dot"></span>Channel Comparison</h2>
+  <table>
+    <thead><tr><th>Metric</th>${compRows.map(r=>`<th>${r.label}</th>`).join("")}</tr></thead>
+    <tbody>
+      <tr><td>Messages Sent</td>${compRows.map(r=>`<td>${r.msgs}</td>`).join("")}</tr>
+      <tr><td>Delivery Rate</td>${compRows.map(r=>`<td>${r.dr}</td>`).join("")}</tr>
+      <tr><td>Open / Read Rate</td>${compRows.map(r=>`<td>${r.or}</td>`).join("")}</tr>
+      <tr><td>Click-Through Rate</td>${compRows.map(r=>`<td>${r.ctr}</td>`).join("")}</tr>
+      <tr><td>Conversion Rate</td>${compRows.map(r=>`<td>${r.cv}</td>`).join("")}</tr>
+      <tr><td>Conversions / Mo</td>${compRows.map(r=>`<td>${r.conv}</td>`).join("")}</tr>
+      <tr><td>Revenue / Mo</td>${compRows.map(r=>`<td class="wa-highlight">${r.rev}</td>`).join("")}</tr>
+      <tr><td>Spend / Mo</td>${compRows.map(r=>`<td>${r.spend}</td>`).join("")}</tr>
+      <tr><td>ROI</td>${compRows.map(r=>`<td>${r.roi}</td>`).join("")}</tr>
+      <tr><td>Cost / Conversion</td>${compRows.map(r=>`<td>${r.cpconv}</td>`).join("")}</tr>
+    </tbody>
+  </table>
+  ${cc.map(ch=>{const c=allData[ch];const rd=w.revenue-c.revenue;return`<div class="insight-box">
+    <strong>WhatsApp vs ${CH_CFG[ch].label}:</strong> WhatsApp generates ${fmtMoney(rd)} more monthly revenue (${fmtMoney(rd*12)}/year) with a ${(w.roi-c.roi).toFixed(1)}x higher ROI and ${fmt(w.conversions-c.conversions)} more conversions per month.
+  </div>`}).join("")}
+</div>`:""}
+
+<div class="footer">
+  Generated by WhatsApp ROI Calculator &middot; ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
+</div>
+
+</div></body></html>`;
+    // Open in new window for print-to-PDF
+    const win=window.open("","_blank","width=900,height=700");
+    win.document.write(html);win.document.close();
+    setTimeout(()=>{win.print()},500);
+    setSt(s=>({...s,pdf:"done"}));
+  }catch(e){setErr(`PDF: ${e.message}`);setSt(s=>({...s,pdf:null}))}};
+
   const genSummary=async()=>{try{setSt(s=>({...s,txt:"loading"}));setErr("");
     let txt=`WHATSAPP ROI ANALYSIS\n${"=".repeat(50)}\nPrepared for: ${name}\nCountry: ${country} | Industry: ${industry}\nAverage Order Value: $${dealValue}\nDate: ${new Date().toLocaleDateString()}\n\n`;
     txt+=`CHANNEL COMPARISON\n${"-".repeat(50)}\n`;
@@ -660,6 +786,7 @@ ${c?`<div class="card"><h2>Shift Simulator: ${chLabel} &rarr; WhatsApp</h2>
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:10}}>
         {[
+          {k:"pdf",l:"PDF Report",i:<Icon name="download" size={20}/>,fn:genPDF,d:"Professional report — save as PDF from print dialog"},
           {k:"html",l:"Interactive Report (HTML)",i:<Icon name="globe" size={20}/>,fn:genHTML,d:"Full report + shift simulator"},
           {k:"csv",l:"Spreadsheet Data (CSV)",i:<Icon name="barChart" size={20}/>,fn:genCSV,d:"Opens in Excel / Google Sheets"},
           {k:"txt",l:"Text Summary",i:<Icon name="fileText" size={20}/>,fn:genSummary,d:"Plain text executive summary"},
