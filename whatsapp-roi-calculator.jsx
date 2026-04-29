@@ -83,7 +83,7 @@ const INDUSTRIES=[
 {name:"E-commerce",archetype:"direct",rateLabel:"Conversion Rate"},{name:"Travel & Hospitality",archetype:"direct",rateLabel:"Booking Rate"},{name:"Food Delivery",archetype:"direct",rateLabel:"Order Rate"},{name:"Financial Services",archetype:"direct",rateLabel:"Conversion Rate"},{name:"Automotive",archetype:"leadgen",rateLabel:"Message-to-Test-Drive Rate"},{name:"Real Estate",archetype:"leadgen",rateLabel:"Message-to-Booking Rate"},{name:"Insurance",archetype:"leadgen",rateLabel:"Message-to-Policy Rate"},{name:"Education",archetype:"leadgen",rateLabel:"Message-to-Enrollment Rate"},{name:"Retail (Physical)",archetype:"footfall",rateLabel:"Store Visit Rate"},{name:"QSR",archetype:"footfall",rateLabel:"Order Rate"},{name:"Healthcare",archetype:"footfall",rateLabel:"Appointment Rate"},
 ];
 const CONV={"Developed West":{"E-commerce":1.8,"Travel & Hospitality":2.2,"Food Delivery":2.5,"Financial Services":1.5,"Automotive":0.8,"Real Estate":0.5,"Insurance":1.0,"Education":1.2,"Retail (Physical)":2.0,"QSR":3.0,"Healthcare":2.5},"Developed Asia":{"E-commerce":2.2,"Travel & Hospitality":2.5,"Food Delivery":3.0,"Financial Services":1.8,"Automotive":0.9,"Real Estate":0.6,"Insurance":1.2,"Education":1.5,"Retail (Physical)":2.5,"QSR":3.5,"Healthcare":2.8},"Emerging Asia":{"E-commerce":2.8,"Travel & Hospitality":3.0,"Food Delivery":5.0,"Financial Services":2.0,"Automotive":1.0,"Real Estate":0.7,"Insurance":1.4,"Education":1.8,"Retail (Physical)":3.0,"QSR":4.8,"Healthcare":3.5},"LATAM":{"E-commerce":3.2,"Travel & Hospitality":3.0,"Food Delivery":5.5,"Financial Services":2.0,"Automotive":0.9,"Real Estate":0.6,"Insurance":1.3,"Education":1.8,"Retail (Physical)":3.0,"QSR":5.0,"Healthcare":3.5},"MENA":{"E-commerce":2.5,"Travel & Hospitality":3.2,"Food Delivery":4.0,"Financial Services":2.0,"Automotive":1.0,"Real Estate":0.8,"Insurance":1.3,"Education":1.6,"Retail (Physical)":2.8,"QSR":4.2,"Healthcare":3.2}};
-const BENCH={whatsapp:{"Developed West":{deliveryRate:96,openRate:90,ctr:25,optOutRate:0.50},"Developed Asia":{deliveryRate:97,openRate:95,ctr:28,optOutRate:0.40},"Emerging Asia":{deliveryRate:97,openRate:98,ctr:35,optOutRate:0.30},"LATAM":{deliveryRate:97,openRate:98,ctr:38,optOutRate:0.28},"MENA":{deliveryRate:96,openRate:97,ctr:32,optOutRate:0.32}},sms:{"Developed West":{deliveryRate:90,openRate:98,ctr:20,optOutRate:1.50},"Developed Asia":{deliveryRate:88,openRate:98,ctr:18,optOutRate:1.20},"Emerging Asia":{deliveryRate:82,openRate:98,ctr:12,optOutRate:1.80},"LATAM":{deliveryRate:80,openRate:98,ctr:10,optOutRate:2.00},"MENA":{deliveryRate:83,openRate:98,ctr:11,optOutRate:1.80}},email:{"Developed West":{deliveryRate:90,openRate:26,ctr:2.3,optOutRate:0.30},"Developed Asia":{deliveryRate:88,openRate:24,ctr:2.0,optOutRate:0.22},"Emerging Asia":{deliveryRate:85,openRate:21,ctr:1.8,optOutRate:0.20},"LATAM":{deliveryRate:84,openRate:20,ctr:2.0,optOutRate:0.10},"MENA":{deliveryRate:86,openRate:22,ctr:1.9,optOutRate:0.18}}};
+const BENCH={whatsapp:{"Developed West":{deliveryRate:96,openRate:90,ctr:25},"Developed Asia":{deliveryRate:97,openRate:95,ctr:28},"Emerging Asia":{deliveryRate:97,openRate:98,ctr:35},"LATAM":{deliveryRate:97,openRate:98,ctr:38},"MENA":{deliveryRate:96,openRate:97,ctr:32}},sms:{"Developed West":{deliveryRate:90,openRate:98,ctr:20},"Developed Asia":{deliveryRate:88,openRate:98,ctr:18},"Emerging Asia":{deliveryRate:82,openRate:98,ctr:12},"LATAM":{deliveryRate:80,openRate:98,ctr:10},"MENA":{deliveryRate:83,openRate:98,ctr:11}},email:{"Developed West":{deliveryRate:90,openRate:26,ctr:2.3},"Developed Asia":{deliveryRate:88,openRate:24,ctr:2.0},"Emerging Asia":{deliveryRate:85,openRate:21,ctr:1.8},"LATAM":{deliveryRate:84,openRate:20,ctr:2.0},"MENA":{deliveryRate:86,openRate:22,ctr:1.9}}};
 const CURRENCIES={"Argentina":{code:"ARS",symbol:"AR$",rate:870},"Australia":{code:"AUD",symbol:"A$",rate:1.53},"Bangladesh":{code:"BDT",symbol:"\u09F3",rate:110},"Brazil":{code:"BRL",symbol:"R$",rate:4.95},"Cambodia":{code:"KHR",symbol:"\u17DB",rate:4100},"Canada":{code:"CAD",symbol:"C$",rate:1.36},"Chile":{code:"CLP",symbol:"CL$",rate:890},"Colombia":{code:"COP",symbol:"COL$",rate:3950},"Denmark":{code:"DKK",symbol:"kr",rate:6.88},"Egypt":{code:"EGP",symbol:"E\u00A3",rate:30.90},"France":{code:"EUR",symbol:"\u20AC",rate:0.92},"Germany":{code:"EUR",symbol:"\u20AC",rate:0.92},"Hong Kong":{code:"HKD",symbol:"HK$",rate:7.82},"India":{code:"INR",symbol:"\u20B9",rate:83.50},"Indonesia":{code:"IDR",symbol:"Rp",rate:15700},"Ireland":{code:"EUR",symbol:"\u20AC",rate:0.92},"Israel":{code:"ILS",symbol:"\u20AA",rate:3.68},"Italy":{code:"EUR",symbol:"\u20AC",rate:0.92},"Japan":{code:"JPY",symbol:"\u00A5",rate:149.50},"Malaysia":{code:"MYR",symbol:"RM",rate:4.42},"Mexico":{code:"MXN",symbol:"MX$",rate:17.20},"Myanmar":{code:"MMK",symbol:"K",rate:2100},"Netherlands":{code:"EUR",symbol:"\u20AC",rate:0.92},"New Zealand":{code:"NZD",symbol:"NZ$",rate:1.66},"Norway":{code:"NOK",symbol:"kr",rate:10.80},"Pakistan":{code:"PKR",symbol:"Rs",rate:280},"Peru":{code:"PEN",symbol:"S/",rate:3.72},"Philippines":{code:"PHP",symbol:"\u20B1",rate:56.20},"Poland":{code:"PLN",symbol:"z\u0142",rate:4.05},"Portugal":{code:"EUR",symbol:"\u20AC",rate:0.92},"Qatar":{code:"QAR",symbol:"QR",rate:3.64},"Saudi Arabia":{code:"SAR",symbol:"\uFDFC",rate:3.75},"Singapore":{code:"SGD",symbol:"S$",rate:1.34},"South Africa":{code:"ZAR",symbol:"R",rate:18.80},"South Korea":{code:"KRW",symbol:"\u20A9",rate:1320},"Spain":{code:"EUR",symbol:"\u20AC",rate:0.92},"Sri Lanka":{code:"LKR",symbol:"Rs",rate:320},"Sweden":{code:"SEK",symbol:"kr",rate:10.50},"Switzerland":{code:"CHF",symbol:"CHF",rate:0.88},"Taiwan":{code:"TWD",symbol:"NT$",rate:31.50},"Thailand":{code:"THB",symbol:"\u0E3F",rate:35.80},"Turkey":{code:"TRY",symbol:"\u20BA",rate:32.50},"UAE":{code:"AED",symbol:"\u062F.\u0625",rate:3.67},"UK":{code:"GBP",symbol:"\u00A3",rate:0.79},"US":{code:"USD",symbol:"$",rate:1},"Vietnam":{code:"VND",symbol:"\u20AB",rate:24500}};
 
 // ─── UTILITY ─────────────────────────────────────────────────────
@@ -993,8 +993,6 @@ export default function App(){
   const[showLanding,setShowLanding]=useState(true);
   const[msgType,setMsgType]=useState(null); // "marketing" | "utility"
   const[mode,setMode]=useState("basic"),[step,setStep]=useState(0),[country,setCountry]=useState(null),[industry,setIndustry]=useState(null),[compChannels,setCompCh]=useState(["sms"]),[dealValue,setDV]=useState(50),[chInputs,setChI]=useState({}),[rTab,setRTab]=useState(0),[showExport,setShowExp]=useState(false),[showSc,setShowSc]=useState(false),[currencyMode,setCM]=useState("usd");
-  const[inputMode,setInputMode]=useState("volume"); // "volume" | "goal"
-  const[targetRevenue,setTargetRev]=useState(50000);
   const[clientName,setClientName]=useState("");
   const[selUtilCases,setSelUC]=useState([]);
   const[utilInputs,setUtilInp]=useState({});
@@ -1011,7 +1009,7 @@ export default function App(){
     _cRate=currencyInfo.rate;_cSym=currencyInfo.symbol;_cCode=currencyInfo.code;
   }else{_cRate=1;_cSym="$";_cCode="USD";}
 
-  useEffect(()=>{setStep(0);setCountry(null);setIndustry(null);setCompCh(["sms"]);setDV(50);setChI({});setRTab(0);setCM("usd");setInputMode("volume");setTargetRev(50000);setClientName("");setSelUC([]);setUtilInp({})},[mode]);
+  useEffect(()=>{setStep(0);setCountry(null);setIndustry(null);setCompCh(["sms"]);setDV(50);setChI({});setRTab(0);setCM("usd");setClientName("");setSelUC([]);setUtilInp({})},[mode]);
 
   // Keyboard navigation: Enter to advance, Esc to go back
   useEffect(()=>{
@@ -1026,7 +1024,7 @@ export default function App(){
   });
 
   // Full reset function
-  const fullReset=()=>{setMsgType(null);setStep(0);setCountry(null);setIndustry(null);setChI({});setCM("usd");setInputMode("volume");setTargetRev(50000);setClientName("");setSelUC([]);setUtilInp({})};
+  const fullReset=()=>{setMsgType(null);setStep(0);setCountry(null);setIndustry(null);setChI({});setCM("usd");setClientName("");setSelUC([]);setUtilInp({})};
 
   useEffect(()=>{
     if(!region||!industry||!countryData)return;
@@ -1034,40 +1032,11 @@ export default function App(){
     const wDR=(wB?.deliveryRate||96)/100,wOR=(wB?.openRate||90)/100;
     // postClickConv = overall / (dr × or × ctr)  — correct funnel: sent→delivered→opened→clicked→converted
     const wPC=wCO/(wDR*wOR*(wCtr/100));
-    const ni={whatsapp:{messages:chInputs.whatsapp?.messages||50000,broadcastsPerMonth:chInputs.whatsapp?.broadcastsPerMonth||4,deliveryRate:wB?.deliveryRate||96,openRate:wB?.openRate||90,ctr:wCtr,convRate:parseFloat(wPC.toFixed(2)),optOutRate:wB?.optOutRate||0.5,costPerMsg:countryData.wap}};
-    ["sms","email"].forEach(ch=>{const b=BENCH[ch]?.[region];if(!b)return;let pc;if(ch==="sms"){const sDR=b.deliveryRate/100,sOR=b.openRate/100,sCTR=b.ctr/100;pc=(wCO*0.15)/(sDR*sOR*sCTR)}else{pc=wPC*0.30}ni[ch]={messages:chInputs[ch]?.messages||50000,broadcastsPerMonth:chInputs[ch]?.broadcastsPerMonth||4,deliveryRate:b.deliveryRate,openRate:b.openRate,ctr:b.ctr,convRate:parseFloat(pc.toFixed(2)),optOutRate:b.optOutRate,costPerMsg:ch==="sms"?countryData.sms:0.003}});
+    const ni={whatsapp:{messages:chInputs.whatsapp?.messages||50000,broadcastsPerMonth:chInputs.whatsapp?.broadcastsPerMonth||4,deliveryRate:wB?.deliveryRate||96,openRate:wB?.openRate||90,ctr:wCtr,convRate:parseFloat(wPC.toFixed(2)),costPerMsg:countryData.wap}};
+    ["sms","email"].forEach(ch=>{const b=BENCH[ch]?.[region];if(!b)return;let pc;if(ch==="sms"){const sDR=b.deliveryRate/100,sOR=b.openRate/100,sCTR=b.ctr/100;pc=(wCO*0.15)/(sDR*sOR*sCTR)}else{pc=wPC*0.30}ni[ch]={messages:chInputs[ch]?.messages||50000,broadcastsPerMonth:chInputs[ch]?.broadcastsPerMonth||4,deliveryRate:b.deliveryRate,openRate:b.openRate,ctr:b.ctr,convRate:parseFloat(pc.toFixed(2)),costPerMsg:ch==="sms"?countryData.sms:0.003}});
     setChI(ni);
   },[region,industry,country]);
 
-  // Goal Mode: reverse-calculate messages-per-broadcast from target revenue
-  useEffect(()=>{
-    if(inputMode!=="goal"||!chInputs.whatsapp)return;
-    const wa=chInputs.whatsapp;
-    const freq=wa.broadcastsPerMonth||1;
-    const dr=(wa.deliveryRate||96)/100, or=(wa.openRate||90)/100, ctr=(wa.ctr||25)/100, cv=(wa.convRate||5)/100;
-    const revenuePerMsg=dr*or*ctr*cv*dealValue;
-    if(revenuePerMsg<=0)return;
-    const totalMsgsNeeded=Math.ceil(targetRevenue/revenuePerMsg);
-    const perBroadcast=Math.ceil(totalMsgsNeeded/freq);
-    if(perBroadcast!==wa.messages){
-      setChI(p=>({...p,whatsapp:{...p.whatsapp,messages:perBroadcast}}));
-    }
-  },[inputMode,targetRevenue,dealValue,chInputs.whatsapp?.deliveryRate,chInputs.whatsapp?.openRate,chInputs.whatsapp?.ctr,chInputs.whatsapp?.convRate,chInputs.whatsapp?.broadcastsPerMonth]);
-
-  // Goal summary data
-  const goalSummary=useMemo(()=>{
-    if(inputMode!=="goal"||!chInputs.whatsapp)return null;
-    const wa=chInputs.whatsapp;
-    const freq=wa.broadcastsPerMonth||1;
-    const dr=(wa.deliveryRate||96)/100,or=(wa.openRate||90)/100,ctr=(wa.ctr||25)/100,cv=(wa.convRate||5)/100;
-    const revenuePerMsg=dr*or*ctr*cv*dealValue;
-    const totalMsgsNeeded=revenuePerMsg>0?Math.ceil(targetRevenue/revenuePerMsg):0;
-    const perBroadcast=freq>0?Math.ceil(totalMsgsNeeded/freq):0;
-    const spend=totalMsgsNeeded*(wa.costPerMsg||0);
-    const roi=spend>0?targetRevenue/spend:0;
-    const conversions=dealValue>0?Math.ceil(targetRevenue/dealValue):0;
-    return{neededMsgs:totalMsgsNeeded,perBroadcast,spend,roi,conversions,targetRevenue};
-  },[inputMode,targetRevenue,dealValue,chInputs.whatsapp]);
 
   const allR=useMemo(()=>{const r={};const ac=mode==="basic"?["whatsapp"]:["whatsapp",...compChannels];ac.forEach(ch=>{if(chInputs[ch])r[ch]=deriveAdv(chInputs[ch],dealValue)});return r},[chInputs,dealValue,mode,compChannels]);
   const activeCh=mode==="basic"?["whatsapp"]:["whatsapp",...compChannels];
@@ -1277,63 +1246,9 @@ export default function App(){
           </div>}
         </Card>
 
-        {/* Goal Mode / Volume Mode Toggle */}
         <Card delay={0.05} style={{marginBottom:16}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:16}}>
-            <div>
-              <h2 style={{fontFamily:T.fontDisplay,fontWeight:800,fontSize:20,marginBottom:4}}>
-                {inputMode==="volume"?"Deal Value & Volume":"Revenue Goal"}
-              </h2>
-              <p style={{fontSize:13,color:T.textMuted}}>
-                {inputMode==="volume"?"Set your volume and deal value":"Set your target and we'll calculate what's needed"}
-              </p>
-            </div>
-            <div style={{display:"flex",gap:2,background:T.darkCard,borderRadius:T.radiusSm,padding:3}}>
-              {[{k:"volume",l:"Volume Mode",d:"I know my volume"},{k:"goal",l:"Goal Mode",d:"I have a revenue target"}].map(m=>
-                <button key={m.k} onClick={()=>setInputMode(m.k)} style={{
-                  padding:"8px 16px",border:"none",cursor:"pointer",borderRadius:T.radiusXs,
-                  fontFamily:T.fontDisplay,fontWeight:600,fontSize:12,whiteSpace:"nowrap",
-                  background:inputMode===m.k?T.surfaceLight:"transparent",
-                  color:inputMode===m.k?T.text:T.textMuted,transition:"all 0.2s ease",
-                }}>{m.l}</button>
-              )}
-            </div>
-          </div>
-
-          {inputMode==="goal" && (
-            <div style={{
-              background:"linear-gradient(135deg,#0a2618,#0d3320)",
-              borderRadius:T.radiusSm,padding:20,marginBottom:16,
-              border:`1.5px solid ${T.green}30`,
-            }}>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                <Icon name="target" size={18} color={T.green}/>
-                <span style={{fontFamily:T.fontDisplay,fontWeight:700,fontSize:15,color:T.darkGreen}}>What's your monthly revenue target?</span>
-              </div>
-              <div style={{display:"flex",gap:16,alignItems:"flex-end",flexWrap:"wrap"}}>
-                <InputField label="Target Monthly Revenue (USD)" value={targetRevenue} onChange={setTargetRev} prefix="$" tooltip="How much revenue do you want WhatsApp to generate?" style={{marginBottom:0,flex:"1 1 250px"}}/>
-                {goalSummary && (
-                  <div style={{
-                    display:"flex",gap:16,flexWrap:"wrap",padding:"8px 0",
-                  }}>
-                    <div style={{textAlign:"center"}}>
-                      <div style={{fontSize:10,color:T.textMuted,marginBottom:2}}>Messages Needed</div>
-                      <div style={{fontSize:18,fontWeight:800,fontFamily:T.fontDisplay,color:T.darkGreen}}>{fmt(goalSummary.neededMsgs)}</div>
-                    </div>
-                    <div style={{textAlign:"center"}}>
-                      <div style={{fontSize:10,color:T.textMuted,marginBottom:2}}>Investment</div>
-                      <div style={{fontSize:18,fontWeight:800,fontFamily:T.fontDisplay,color:T.text}}>{dm(goalSummary.spend)}</div>
-                    </div>
-                    <div style={{textAlign:"center"}}>
-                      <div style={{fontSize:10,color:T.textMuted,marginBottom:2}}>Implied ROI</div>
-                      <div style={{fontSize:18,fontWeight:800,fontFamily:T.fontDisplay,color:T.green}}>{goalSummary.roi.toFixed(1)+"\u00D7"}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
+          <h2 style={{fontFamily:T.fontDisplay,fontWeight:800,fontSize:20,marginBottom:4}}>Deal Value</h2>
+          <p style={{fontSize:13,color:T.textMuted,marginBottom:16}}>Set your average revenue per conversion</p>
           <div style={{display:"flex",gap:16,alignItems:"flex-end",flexWrap:"wrap"}}>
             <InputField label="Average Deal Value (USD)" value={dealValue} onChange={setDV} prefix="$" tooltip="Average revenue per conversion" style={{marginBottom:0,flex:"1 1 200px"}}/>
             {currencyInfo&&currencyInfo.code!=="USD"&&<div style={{padding:"8px 14px",background:T.surfaceLight,borderRadius:T.radiusXs,fontSize:12,fontFamily:T.fontMono,color:T.textMuted,display:"flex",alignItems:"center",height:42}}>{"\u2248"} {currencyInfo.symbol}{(dealValue*currencyInfo.rate).toLocaleString("en-US",{maximumFractionDigits:0})} {currencyInfo.code}</div>}
@@ -1357,47 +1272,6 @@ export default function App(){
 
         {mode==="advanced"&&allR.whatsapp&&<ExecutiveSummary waData={allR.whatsapp} compData={allR} channels={activeCh} country={country} industry={industry} clientName={clientName.trim()}/>}
 
-        {/* Goal Mode Summary - shown when user used Goal Mode */}
-        {inputMode==="goal"&&goalSummary&&allR.whatsapp&&(
-          <Card style={{
-            background:"linear-gradient(135deg,#0a2618,#0d3320)",
-            border:`1.5px solid ${T.green}30`,marginBottom:24,
-          }}>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-              <Icon name="target" size={20} color={T.green}/>
-              <span style={{fontFamily:T.fontSora,fontWeight:700,fontSize:16,color:T.darkGreen}}>Goal Mode: Investment Case{clientName.trim()&&` for ${clientName.trim()}`}</span>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:16,marginBottom:16}}>
-              <div style={{textAlign:"center",padding:14,background:T.surfaceLight,borderRadius:T.radiusXs,boxShadow:"0 1px 4px rgba(0,0,0,0.3)"}}>
-                <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Revenue Target</div>
-                <div style={{fontSize:22,fontWeight:800,fontFamily:T.fontDisplay,color:T.darkGreen}}>{dm(goalSummary.targetRevenue)}</div>
-                <div style={{fontSize:10,color:T.textMuted,marginTop:2}}>per month</div>
-              </div>
-              <div style={{textAlign:"center",padding:14,background:T.surfaceLight,borderRadius:T.radiusXs,boxShadow:"0 1px 4px rgba(0,0,0,0.3)"}}>
-                <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Required Messages</div>
-                <div style={{fontSize:22,fontWeight:800,fontFamily:T.fontDisplay,color:T.text}}>{fmt(goalSummary.neededMsgs)}</div>
-                <div style={{fontSize:10,color:T.textMuted,marginTop:2}}>messages / month</div>
-              </div>
-              <div style={{textAlign:"center",padding:14,background:T.surfaceLight,borderRadius:T.radiusXs,boxShadow:"0 1px 4px rgba(0,0,0,0.3)"}}>
-                <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Required Investment</div>
-                <div style={{fontSize:22,fontWeight:800,fontFamily:T.fontDisplay,color:T.text}}>{dm(goalSummary.spend)}</div>
-                <div style={{fontSize:10,color:T.textMuted,marginTop:2}}>WhatsApp spend / month</div>
-              </div>
-              <div style={{textAlign:"center",padding:14,background:T.surfaceLight,borderRadius:T.radiusXs,boxShadow:"0 1px 4px rgba(0,0,0,0.3)"}}>
-                <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Implied ROI</div>
-                <div style={{fontSize:22,fontWeight:800,fontFamily:T.fontDisplay,color:T.green}}>{goalSummary.roi.toFixed(1)+"\u00D7"}</div>
-                <div style={{fontSize:10,color:T.textMuted,marginTop:2}}>return on spend</div>
-              </div>
-            </div>
-            <p style={{fontSize:13,lineHeight:1.7,color:T.textMuted,margin:0}}>
-              For {displayName} to hit <strong style={{color:T.darkGreen}}>{dm(goalSummary.targetRevenue)}/month</strong> in revenue,
-              {displayName} needs <strong>{fmt(goalSummary.neededMsgs)}</strong> WhatsApp messages
-              generating <strong>{fmt(goalSummary.conversions)}</strong> conversions.
-              This requires a <strong>{dm(goalSummary.spend)}</strong> monthly investment for a <strong style={{color:T.green}}>{goalSummary.roi.toFixed(1)+"\u00D7"} return</strong>.
-              {goalSummary.roi >= 5 ? " An exceptionally strong investment case." : goalSummary.roi >= 2 ? " A solid investment case." : " Consider optimizing conversion rates to strengthen ROI."}
-            </p>
-          </Card>
-        )}
 
         {/* Break-Even Card - always visible in results */}
         {allR.whatsapp && <BreakEvenCard waData={allR.whatsapp} dealValue={dealValue} clientName={clientName.trim()} broadcastsPerMonth={chInputs.whatsapp?.broadcastsPerMonth||4} />}
