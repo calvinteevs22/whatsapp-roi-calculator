@@ -1309,9 +1309,6 @@ export default function App(){
             <MetricCard label="ROI" value={allR.whatsapp.roi.toFixed(1)+"\u00D7"} color={T.darkGreen} icon={<Icon name="trendingUp" size={14}/>} delay={0.1}/>
             <MetricCard label="Cost / Conversion" value={dm(allR.whatsapp.cpConv)} color={T.textMuted} icon={<Icon name="dollarSign" size={14}/>} delay={0.15}/>
             <MetricCard label="Monthly Spend" value={dm(allR.whatsapp.spend)} subtext={bspMo>0?`Msg: ${dm(allR.whatsapp.msgSpend)} + BSP: ${dm(bspMo)}`:undefined} color={T.textMuted} icon={<Icon name="dollarSign" size={14}/>} delay={0.2}/>
-            <MetricCard label="Rev / 1K Messages" value={dm(allR.whatsapp.rev1k)} color={T.darkGreen} icon={<Icon name="barChart" size={14}/>} delay={0.25}/>
-            <MetricCard label="Cost / Click" value={dm(allR.whatsapp.cpClick)} color={T.textMuted} icon={<Icon name="creditCard" size={14}/>} delay={0.3}/>
-            <MetricCard label="Reach Rate" value={pct(allR.whatsapp.reachRate)} color={T.green} icon={<Icon name="target" size={14}/>} delay={0.35}/>
           </div>
           {/* Annual Projection Card */}
           {annualCalc&&<div style={{background:`linear-gradient(135deg, ${T.darkCard} 0%, #1a2235 100%)`,borderRadius:T.radius,padding:24,marginBottom:20,border:`1px solid ${T.darkCardLight}`,animation:"fadeUp 0.5s ease 0.15s both"}}>
@@ -1335,11 +1332,6 @@ export default function App(){
                 <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Annual Spend</div>
                 <div style={{fontSize:24,fontWeight:800,fontFamily:T.fontDisplay,color:T.textMuted}}>{dm(annualCalc.totalSpend)}</div>
                 <div style={{fontSize:11,color:T.textLight,marginTop:2}}>{annualCalc.totalBspCost>0?"incl. BSP fees":"total messaging cost"}</div>
-              </div>
-              <div style={{background:"rgba(255,255,255,0.06)",borderRadius:T.radiusXs,padding:"12px 14px"}}>
-                <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Audience Retained</div>
-                <div style={{fontSize:24,fontWeight:800,fontFamily:T.fontDisplay,color:parseFloat(annualCalc.retained)>=90?T.green:"#fbbf24"}}>{annualCalc.retained}%</div>
-                <div style={{fontSize:11,color:T.textLight,marginTop:2}}>after 12 months</div>
               </div>
             </div>
           </div>}
