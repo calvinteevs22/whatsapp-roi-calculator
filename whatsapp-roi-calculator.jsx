@@ -1094,6 +1094,7 @@ export default function App(){
             </div>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
+            {msgType&&step>0&&<Btn variant="secondary" size="sm" onClick={()=>setStep(s=>Math.max(0,s-1))}><Icon name="arrowLeft" size={14}/> Back</Btn>}
             {msgType&&mode!=="utility"&&<Btn variant="ghost" size="sm" onClick={()=>setShowSc(!showSc)}><Icon name="zap" size={14}/> Quick Start</Btn>}
             {msgType&&<Btn variant="ghost" size="sm" onClick={()=>{fullReset()}}><Icon name="arrowLeft" size={14}/> Change Type</Btn>}
           </div>
@@ -1380,8 +1381,8 @@ export default function App(){
       )}
 
       {/* Nav */}
-      {step<totalSteps-1&&<div style={{display:"flex",justifyContent:"space-between",marginTop:24,animation:"fadeUp 0.4s ease 0.2s both"}}><Btn variant="secondary" onClick={()=>setStep(Math.max(0,step-1))} disabled={step===0}>{"\u2190"} Back</Btn><Btn variant="primary" onClick={()=>setStep(step+1)} disabled={!canGo()} size="lg">{step===totalSteps-2?"Calculate ROI \u2192":"Continue \u2192"}</Btn></div>}
-      {step===totalSteps-1&&<div style={{display:"flex",justifyContent:"space-between",marginTop:24}}><Btn variant="secondary" onClick={()=>setStep(step-1)}><Icon name="arrowLeft" size={14}/> Back to {mode==="utility"?"Configure":"Inputs"}</Btn><Btn variant="ghost" onClick={fullReset}><Icon name="refreshCw" size={14}/> Start Over</Btn></div>}
+      {step<totalSteps-1&&<div style={{display:"flex",justifyContent:"flex-end",marginTop:24,animation:"fadeUp 0.4s ease 0.2s both"}}><Btn variant="primary" onClick={()=>setStep(step+1)} disabled={!canGo()} size="lg">{step===totalSteps-2?"Calculate ROI \u2192":"Continue \u2192"}</Btn></div>}
+      {step===totalSteps-1&&<div style={{display:"flex",justifyContent:"flex-end",marginTop:24}}><Btn variant="ghost" onClick={fullReset}><Icon name="refreshCw" size={14}/> Start Over</Btn></div>}
 
       {showExport&&<ExportModal onClose={()=>setShowExp(false)} allData={allR} channels={activeCh} dealValue={dealValue} country={country} industry={industry} clientName={clientName.trim()}/>}
 
