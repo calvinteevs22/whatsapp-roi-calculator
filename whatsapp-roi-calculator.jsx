@@ -588,7 +588,7 @@ function ExportModal({onClose,allData,channels,dealValue,country,industry,client
     const rows=[["Metric",...channels.map(c=>CH_CFG[c].label)]];
     const metrics=[["Messages Sent",c=>fmt(c.messages)],["Delivery Rate",c=>pct(c.deliveryRate)],["Open/Read Rate",c=>pct(c.openRate)],["CTR",c=>pct(c.ctr)],["Conversion Rate",c=>pct(c.convRate,2)],["Conversions/Mo",c=>fmt(c.conversions)],["Revenue/Mo",c=>"$"+c.revenue.toFixed(2)],["Spend/Mo",c=>"$"+c.spend.toFixed(2)],["ROI",c=>c.roi.toFixed(1)+"x"],["Cost/Conversion",c=>"$"+c.cpConv.toFixed(2)],["Rev/1K Msgs",c=>"$"+c.rev1k.toFixed(2)]];
     metrics.forEach(([label,fn])=>{rows.push([label,...channels.map(c=>fn(allData[c]))])});
-    rows.push([]);rows.push(["Prepared for",name]);rows.push(["Country",country]);rows.push(["Industry",industry]);rows.push(["Deal Value","$"+dealValue]);
+    rows.push([]);rows.push(["Prepared for",name]);rows.push(["Country",country]);rows.push(["Industry",industry]);rows.push(["Average Order Value","$"+dealValue]);
     const csv=rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("\n");
     download(new Blob([csv],{type:"text/csv;charset=utf-8"}),`${name}_WhatsApp_ROI.csv`);
     setSt(s=>({...s,csv:"done"}));
@@ -637,7 +637,7 @@ ${c?`<div class="card"><h2>Shift Simulator: ${chLabel} &rarr; WhatsApp</h2>
   }catch(e){setErr(`HTML: ${e.message}`);setSt(s=>({...s,html:null}))}};
 
   const genSummary=async()=>{try{setSt(s=>({...s,txt:"loading"}));setErr("");
-    let txt=`WHATSAPP ROI ANALYSIS\n${"=".repeat(50)}\nPrepared for: ${name}\nCountry: ${country} | Industry: ${industry}\nDeal Value: $${dealValue}\nDate: ${new Date().toLocaleDateString()}\n\n`;
+    let txt=`WHATSAPP ROI ANALYSIS\n${"=".repeat(50)}\nPrepared for: ${name}\nCountry: ${country} | Industry: ${industry}\nAverage Order Value: $${dealValue}\nDate: ${new Date().toLocaleDateString()}\n\n`;
     txt+=`CHANNEL COMPARISON\n${"-".repeat(50)}\n`;
     channels.forEach(ch=>{const d=allData[ch];const cfg=CH_CFG[ch];txt+=`\n${cfg.label}:\n  Messages/Mo:     ${fmt(d.messages)}\n  Revenue/Mo:      ${fmtMoney(d.revenue)}\n  ROI:             ${d.roi.toFixed(1)}x\n  Conversions/Mo:  ${fmt(d.conversions)}\n  Cost/Conversion: ${fmtMoney(d.cpConv)}\n  Rev/1K Messages: ${fmtMoney(d.rev1k)}\n  CTR:             ${pct(d.ctr)}\n\n`});
     if(cc.length>0){txt+=`\nKEY INSIGHTS\n${"-".repeat(50)}\n`;cc.forEach(ch=>{const c=allData[ch];const rd=wa.revenue-c.revenue;txt+=`\nWhatsApp vs ${CH_CFG[ch].label}:\n  Revenue advantage: ${fmtMoney(rd)}/month (${fmtMoney(rd*12)}/year)\n  ROI advantage: ${(wa.roi-c.roi).toFixed(1)}x\n  Extra conversions: ${fmt(wa.conversions-c.conversions)}/month\n`})}
@@ -800,7 +800,7 @@ function ScenarioCompare({baseInputs, region, countryData, industry, indData, de
         {label}
       </div>
       <InputField label="Messages / Month" value={sc.messages} onChange={v => setSc({...sc, messages:v})} min={0} />
-      <InputField label="Deal Value ($)" value={sc.dealValue} onChange={v => setSc({...sc, dealValue:v})} prefix="$" min={0} />
+      <InputField label="Avg Order Value ($)" value={sc.dealValue} onChange={v => setSc({...sc, dealValue:v})} prefix="$" min={0} />
       <InputField label="CTR (%)" value={sc.ctr} onChange={v => setSc({...sc, ctr:v})} suffix="%" min={0} max={100} />
       <InputField label="Post-Click Conv. Rate (%)" value={sc.convRate} onChange={v => setSc({...sc, convRate:v})} suffix="%" min={0} max={100} />
 
@@ -1248,10 +1248,10 @@ export default function App(){
         </Card>
 
         <Card delay={0.05} style={{marginBottom:16}}>
-          <h2 style={{fontFamily:T.fontDisplay,fontWeight:800,fontSize:20,marginBottom:4}}>Deal Value</h2>
+          <h2 style={{fontFamily:T.fontDisplay,fontWeight:800,fontSize:20,marginBottom:4}}>Average Order Value</h2>
           <p style={{fontSize:13,color:T.textMuted,marginBottom:16}}>Set your average revenue per conversion</p>
           <div style={{display:"flex",gap:16,alignItems:"flex-end",flexWrap:"wrap"}}>
-            <InputField label="Average Deal Value (USD)" value={dealValue} onChange={setDV} prefix="$" tooltip="Average revenue per conversion" style={{marginBottom:0,flex:"1 1 200px"}}/>
+            <InputField label="Average Order Value (USD)" value={dealValue} onChange={setDV} prefix="$" tooltip="Average revenue per conversion" style={{marginBottom:0,flex:"1 1 200px"}}/>
             {currencyInfo&&currencyInfo.code!=="USD"&&<div style={{padding:"8px 14px",background:T.surfaceLight,borderRadius:T.radiusXs,fontSize:12,fontFamily:T.fontMono,color:T.textMuted,display:"flex",alignItems:"center",height:42}}>{"\u2248"} {currencyInfo.symbol}{(dealValue*currencyInfo.rate).toLocaleString("en-US",{maximumFractionDigits:0})} {currencyInfo.code}</div>}
           </div>
         </Card>
