@@ -104,17 +104,17 @@ const dm=(n)=>{
   return s+_cSym+a.toFixed(noDec?0:2);
 };
 
-const deriveAdv=(inp,dealValue)=>{
+const deriveAdv=(inp,dealValue,bspMonthly=0)=>{
   const perBroadcast=inp.messages||0,freq=inp.broadcastsPerMonth||1,
     m=perBroadcast*freq, // total monthly messages = per-broadcast × frequency
     dr=(inp.deliveryRate||0)/100,or=(inp.openRate||0)/100,
     ctrV=(inp.ctr||0)/100,cv=(inp.convRate||0)/100,oo=(inp.optOutRate||0)/100,cpm=inp.costPerMsg||0;
   const delivered=m*dr,opened=delivered*or,clicked=opened*ctrV,conversions=clicked*cv,
-    revenue=conversions*dealValue,spend=m*cpm,roi=spend>0?revenue/spend:0,
+    revenue=conversions*dealValue,msgSpend=m*cpm,spend=msgSpend+bspMonthly,roi=spend>0?revenue/spend:0,
     rev1k=m>0?(conversions/m)*1000*dealValue:0,cpConv=conversions>0?spend/conversions:0,
     cpClick=clicked>0?spend/clicked:0,reachRate=dr*or*100,moLost=m*oo,yrLost=moLost*12,
     revAtRisk=yrLost*dr*or*ctrV*cv*dealValue;
-  return{messages:m,messagesPerBroadcast:perBroadcast,broadcastsPerMonth:freq,delivered,opened,clicked,conversions,revenue,spend,roi,rev1k,cpConv,cpClick,
+  return{messages:m,messagesPerBroadcast:perBroadcast,broadcastsPerMonth:freq,delivered,opened,clicked,conversions,revenue,msgSpend,spend,bspMonthlyFee:bspMonthly,roi,rev1k,cpConv,cpClick,
     reachRate,moLost,yrLost,revAtRisk,deliveryRate:inp.deliveryRate,openRate:inp.openRate,
     ctr:inp.ctr,convRate:inp.convRate,optOutRate:inp.optOutRate,costPerMsg:cpm};
 };
@@ -994,6 +994,8 @@ export default function App(){
   const[msgType,setMsgType]=useState(null); // "marketing" | "utility"
   const[mode,setMode]=useState("basic"),[step,setStep]=useState(0),[country,setCountry]=useState(null),[industry,setIndustry]=useState(null),[compChannels,setCompCh]=useState(["sms"]),[dealValue,setDV]=useState(50),[chInputs,setChI]=useState({}),[rTab,setRTab]=useState(0),[showExport,setShowExp]=useState(false),[showSc,setShowSc]=useState(false),[currencyMode,setCM]=useState("usd");
   const[clientName,setClientName]=useState("");
+  const[bspMonthlyFee,setBspMonthly]=useState("");
+  const[bspSetupFee,setBspSetup]=useState("");
   const[selUtilCases,setSelUC]=useState([]);
   const[utilInputs,setUtilInp]=useState({});
 
@@ -1024,7 +1026,7 @@ export default function App(){
   });
 
   // Full reset function
-  const fullReset=()=>{setMsgType(null);setStep(0);setCountry(null);setIndustry(null);setChI({});setCM("usd");setClientName("");setSelUC([]);setUtilInp({})};
+  const fullReset=()=>{setMsgType(null);setStep(0);setCountry(null);setIndustry(null);setChI({});setCM("usd");setClientName("");setSelUC([]);setUtilInp({});setBspMonthly("");setBspSetup("")};
 
   useEffect(()=>{
     if(!region||!industry||!countryData)return;
@@ -1038,20 +1040,24 @@ export default function App(){
   },[region,industry,country]);
 
 
-  const allR=useMemo(()=>{const r={};const ac=mode==="basic"?["whatsapp"]:["whatsapp",...compChannels];ac.forEach(ch=>{if(chInputs[ch])r[ch]=deriveAdv(chInputs[ch],dealValue)});return r},[chInputs,dealValue,mode,compChannels]);
+  const bspMo=parseFloat(bspMonthlyFee)||0;
+  const bspSetup=parseFloat(bspSetupFee)||0;
+  const allR=useMemo(()=>{const r={};const ac=mode==="basic"?["whatsapp"]:["whatsapp",...compChannels];ac.forEach(ch=>{if(chInputs[ch])r[ch]=deriveAdv(chInputs[ch],dealValue,ch==="whatsapp"?bspMo:0)});return r},[chInputs,dealValue,mode,compChannels,bspMo]);
   const activeCh=mode==="basic"?["whatsapp"]:["whatsapp",...compChannels];
   const displayName=clientName.trim()||industry||"your business";
 
-  // Annual projection with opt-out decay (used in basic mode)
+  // Annual projection (used in basic mode)
   const annualCalc=useMemo(()=>{
     const w=allR.whatsapp;if(!w)return null;
-    let audience=w.messages;let totalRev=0,totalSpend=0;
+    let audience=w.messages;let totalRev=0,totalMsgSpend=0;
     const oo=(w.optOutRate||0.5)/100;
     const convPerMsg=(w.deliveryRate/100)*(w.openRate/100)*(w.ctr/100)*(w.convRate/100);
-    for(let i=0;i<12;i++){totalRev+=audience*convPerMsg*dealValue;totalSpend+=audience*w.costPerMsg;audience*=(1-oo)}
+    for(let i=0;i<12;i++){totalRev+=audience*convPerMsg*dealValue;totalMsgSpend+=audience*w.costPerMsg;audience*=(1-oo)}
+    const totalBspCost=bspMo*12+bspSetup;
+    const totalSpend=totalMsgSpend+totalBspCost;
     const retained=w.messages>0?(audience/w.messages*100):100;
-    return{totalRev,totalSpend,profit:totalRev-totalSpend,retained:retained.toFixed(1)};
-  },[allR.whatsapp,dealValue]);
+    return{totalRev,totalSpend,totalBspCost,profit:totalRev-totalSpend,retained:retained.toFixed(1)};
+  },[allR.whatsapp,dealValue,bspMo,bspSetup]);
 
   const applySc=(sc)=>{if(!msgType){setMsgType("marketing")}setCountry(sc.country);setIndustry(sc.industry);setDV(sc.dealValue);setTimeout(()=>{setChI(p=>{const u={...p};Object.keys(u).forEach(ch=>{if(u[ch])u[ch]={...u[ch],messages:sc.messages}});return u})},100);setShowSc(false);setStep(mode==="basic"?2:3)};
 
@@ -1256,6 +1262,27 @@ export default function App(){
           </div>
         </Card>
         {activeCh.map(ch=> <ChannelInputPanel key={ch} channel={ch} inputs={chInputs[ch]||{}} onChange={inp=>setChI(p=>({...p,[ch]:inp}))} region={region} country={countryData} rateLabel={indData?.rateLabel}/>)}
+
+        {/* BSP Platform Costs (optional) */}
+        <Card delay={0.15} style={{marginBottom:16,border:`1px solid ${T.borderLight}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+            <Icon name="building" size={18} color={T.textMuted}/>
+            <h2 style={{fontFamily:T.fontDisplay,fontWeight:700,fontSize:16,color:T.text,margin:0}}>BSP Platform Costs</h2>
+            <span style={{fontSize:11,color:T.textLight,fontFamily:T.fontMono,padding:"2px 8px",background:T.surfaceHover,borderRadius:10}}>Optional</span>
+          </div>
+          <p style={{fontSize:12,color:T.textMuted,marginBottom:16}}>Include your WhatsApp Business Solution Provider fees for a more accurate ROI</p>
+          <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+            <InputField label="Monthly Platform Fee (USD)" value={bspMonthlyFee} onChange={setBspMonthly} prefix="$" tooltip="Monthly subscription fee charged by your BSP (e.g. respond.io, WATI, Gupshup)" min={0} style={{marginBottom:0,flex:"1 1 200px"}}/>
+            <InputField label="One-Time Setup Fee (USD)" value={bspSetupFee} onChange={setBspSetup} prefix="$" tooltip="One-time implementation or onboarding fee charged by your BSP" min={0} style={{marginBottom:0,flex:"1 1 200px"}}/>
+          </div>
+          {(bspMo>0||bspSetup>0)&&<div style={{marginTop:12,padding:"10px 14px",background:T.surfaceLight,borderRadius:T.radiusXs,fontSize:12,color:T.textMuted,fontFamily:T.fontMono}}>
+            {bspMo>0&&<span>Platform: {dm(bspMo)}/mo</span>}
+            {bspMo>0&&bspSetup>0&&<span style={{margin:"0 8px",color:T.textLight}}>|</span>}
+            {bspSetup>0&&<span>Setup: {dm(bspSetup)} (one-time)</span>}
+            <span style={{margin:"0 8px",color:T.textLight}}>|</span>
+            <span>Year 1 total: {dm(bspMo*12+bspSetup)}</span>
+          </div>}
+        </Card>
       </div>}
 
       {/* RESULTS */}
@@ -1283,7 +1310,7 @@ export default function App(){
             <MetricCard label="Conversions / Mo" value={fmt(allR.whatsapp.conversions)} color={T.green} icon={<Icon name="target" size={14}/>} delay={0.05}/>
             <MetricCard label="ROI" value={allR.whatsapp.roi.toFixed(1)+"\u00D7"} color={T.darkGreen} icon={<Icon name="trendingUp" size={14}/>} delay={0.1}/>
             <MetricCard label="Cost / Conversion" value={dm(allR.whatsapp.cpConv)} color={T.textMuted} icon={<Icon name="dollarSign" size={14}/>} delay={0.15}/>
-            <MetricCard label="Monthly Spend" value={dm(allR.whatsapp.spend)} color={T.textMuted} icon={<Icon name="dollarSign" size={14}/>} delay={0.2}/>
+            <MetricCard label="Monthly Spend" value={dm(allR.whatsapp.spend)} subtext={bspMo>0?`Msg: ${dm(allR.whatsapp.msgSpend)} + BSP: ${dm(bspMo)}`:undefined} color={T.textMuted} icon={<Icon name="dollarSign" size={14}/>} delay={0.2}/>
             <MetricCard label="Rev / 1K Messages" value={dm(allR.whatsapp.rev1k)} color={T.darkGreen} icon={<Icon name="barChart" size={14}/>} delay={0.25}/>
             <MetricCard label="Cost / Click" value={dm(allR.whatsapp.cpClick)} color={T.textMuted} icon={<Icon name="creditCard" size={14}/>} delay={0.3}/>
             <MetricCard label="Reach Rate" value={pct(allR.whatsapp.reachRate)} color={T.green} icon={<Icon name="target" size={14}/>} delay={0.35}/>
@@ -1309,7 +1336,7 @@ export default function App(){
               <div style={{background:"rgba(255,255,255,0.06)",borderRadius:T.radiusXs,padding:"12px 14px"}}>
                 <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Annual Spend</div>
                 <div style={{fontSize:24,fontWeight:800,fontFamily:T.fontDisplay,color:T.textMuted}}>{dm(annualCalc.totalSpend)}</div>
-                <div style={{fontSize:11,color:T.textLight,marginTop:2}}>total messaging cost</div>
+                <div style={{fontSize:11,color:T.textLight,marginTop:2}}>{annualCalc.totalBspCost>0?"incl. BSP fees":"total messaging cost"}</div>
               </div>
               <div style={{background:"rgba(255,255,255,0.06)",borderRadius:T.radiusXs,padding:"12px 14px"}}>
                 <div style={{fontSize:11,color:T.textMuted,marginBottom:4}}>Audience Retained</div>
