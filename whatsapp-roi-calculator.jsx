@@ -1141,6 +1141,9 @@ export default function App(){
 
   useEffect(()=>{setStep(0);setCountry(null);setIndustry(null);setCompCh(["sms"]);setDV(50);setChI({});setRTab(0);setCM("usd");setClientName("");setSelUC([]);setUtilInp({})},[mode]);
 
+  // Scroll to top on step change
+  useEffect(()=>{window.scrollTo(0,0)},[step]);
+
   // Keyboard navigation: Enter to advance, Esc to go back
   useEffect(()=>{
     const handler=(e)=>{
