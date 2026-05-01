@@ -1141,8 +1141,10 @@ export default function App(){
 
   useEffect(()=>{setStep(0);setCountry(null);setIndustry(null);setCompCh(["sms"]);setDV(50);setChI({});setRTab(0);setCM("usd");setClientName("");setSelUC([]);setUtilInp({})},[mode]);
 
-  // Scroll to top on step change
-  useEffect(()=>{window.scrollTo(0,0)},[step]);
+  // Scroll to top on navigation
+  useEffect(()=>{window.scrollTo({top:0,behavior:"smooth"})},[step]);
+  useEffect(()=>{window.scrollTo({top:0,behavior:"smooth"})},[mode]);
+  useEffect(()=>{window.scrollTo({top:0,behavior:"smooth"})},[rTab]);
 
   // Keyboard navigation: Enter to advance, Esc to go back
   useEffect(()=>{
@@ -1535,7 +1537,7 @@ export default function App(){
 
             {simScale!==100&&<p style={{fontSize:12,lineHeight:1.6,color:T.textMuted,margin:"14px 0 0",padding:"12px 14px",background:"rgba(255,255,255,0.03)",borderRadius:T.radiusXs,border:`1px solid ${T.borderLight}`}}>
               Scaling to <strong style={{color:"#fff"}}>{simScale}%</strong> ({fmt(sim.messages)} msgs) {sim.deltaRev>=0?"increases":"decreases"} revenue by <strong style={{color:T.green}}>{dm(Math.abs(sim.deltaRev))}/mo</strong> for <strong style={{color:"#fff"}}>{dm(Math.abs(sim.deltaSpend))}</strong> {sim.deltaSpend>=0?"more":"less"} spend.
-              {bspMo>0&&simScale>100&&` ROI improves because the ${dm(bspMo)} BSP fee is spread across more messages.`}
+              {bspMo>0&&simScale>100?` ROI improves because the ${dm(bspMo)} BSP fee is spread across more messages.`:bspMo===0?" ROI stays stable because revenue and cost scale proportionally — no fixed costs to amortize. Add a BSP platform fee above to see ROI improve at higher volume.":""}
             </p>}
           </div>}
 
