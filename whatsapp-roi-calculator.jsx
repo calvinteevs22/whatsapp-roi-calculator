@@ -1125,6 +1125,7 @@ export default function App(){
   const[bspSetupFee,setBspSetup]=useState("");
   const[selUtilCases,setSelUC]=useState([]);
   const[utilInputs,setUtilInp]=useState({});
+  const[simScale,setSimScale]=useState(100);
 
   const region=country?COUNTRIES.find(c=>c.name===country)?.region:null;
   const countryData=COUNTRIES.find(c=>c.name===country);
@@ -1153,7 +1154,7 @@ export default function App(){
   });
 
   // Full reset function
-  const fullReset=()=>{setMsgType(null);setStep(0);setCountry(null);setIndustry(null);setChI({});setCM("usd");setClientName("");setSelUC([]);setUtilInp({});setBspMonthly("");setBspSetup("")};
+  const fullReset=()=>{setMsgType(null);setStep(0);setCountry(null);setIndustry(null);setChI({});setCM("usd");setClientName("");setSelUC([]);setUtilInp({});setBspMonthly("");setBspSetup("");setSimScale(100)};
 
   useEffect(()=>{
     if(!region||!industry||!countryData)return;
@@ -1185,6 +1186,25 @@ export default function App(){
     const retained=w.messages>0?(audience/w.messages*100):100;
     return{totalRev,totalSpend,totalBspCost,profit:totalRev-totalSpend,retained:retained.toFixed(1)};
   },[allR.whatsapp,dealValue,bspMo,bspSetup]);
+
+  // Volume scale simulator for basic mode
+  const sim=useMemo(()=>{
+    const w=allR.whatsapp;if(!w)return null;
+    const scale=simScale/100;
+    const simMsgs=Math.round(w.messages*scale);
+    const simConv=w.conversions*scale;
+    const simRev=w.revenue*scale;
+    const simMsgSpend=w.msgSpend*scale;
+    const simSpend=simMsgSpend+bspMo;
+    const simRoi=simSpend>0?simRev/simSpend:0;
+    const simCpConv=simConv>0?simSpend/simConv:0;
+    return{
+      messages:simMsgs,conversions:simConv,revenue:simRev,
+      spend:simSpend,roi:simRoi,cpConv:simCpConv,
+      deltaRev:simRev-w.revenue,deltaConv:Math.round(simConv-w.conversions),
+      deltaSpend:simSpend-w.spend,deltaRoi:simRoi-w.roi,
+    };
+  },[allR.whatsapp,simScale,bspMo]);
 
   const applySc=(sc)=>{if(!msgType){setMsgType("marketing")}setCountry(sc.country);setIndustry(sc.industry);setDV(sc.dealValue);setTimeout(()=>{setChI(p=>{const u={...p};Object.keys(u).forEach(ch=>{if(u[ch])u[ch]={...u[ch],messages:sc.messages}});return u})},100);setShowSc(false);setStep(mode==="basic"?2:3)};
 
@@ -1465,6 +1485,58 @@ export default function App(){
 
           <InsightBox pills={[{label:"Revenue",value:dm(allR.whatsapp.revenue),icon:<Icon name="dollarSign" size={14}/>,color:T.green},{label:"ROI",value:allR.whatsapp.roi.toFixed(1)+"\u00D7",icon:<Icon name="trendingUp" size={14}/>,color:T.green},{label:"Conversions",value:fmt(allR.whatsapp.conversions),icon:<Icon name="target" size={14}/>,color:T.green}]} narrative={`Sending ${fmt(allR.whatsapp.messages)} WhatsApp messages across ${chInputs.whatsapp?.broadcastsPerMonth||4} broadcasts per month for ${displayName} in ${country} yields ${fmt(allR.whatsapp.conversions)} conversions and ${dm(allR.whatsapp.revenue)} in revenue. With a ${allR.whatsapp.roi.toFixed(1)}\u00D7 ROI, the annual revenue potential is ${dm(annualCalc?annualCalc.totalRev:allR.whatsapp.revenue*12)}.`}/>
           <div style={{marginTop:20}}><FunnelViz data={allR.whatsapp} color={T.green} label="whatsapp"/></div>
+
+          {/* Volume Scale Simulator */}
+          {sim&&<div style={{
+            background:`linear-gradient(135deg, ${T.darkCard} 0%, #1a2235 100%)`,
+            borderRadius:T.radius,padding:24,marginTop:20,
+            border:`1px solid ${T.darkCardLight}`,animation:"fadeUp 0.5s ease 0.2s both",
+          }}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
+              <Icon name="barChart" size={20} color={T.green}/>
+              <span style={{fontFamily:T.fontSora,fontWeight:700,fontSize:16,color:"#fff"}}>Scale Simulator</span>
+            </div>
+            <p style={{fontSize:12,color:T.textMuted,marginBottom:16,marginTop:4}}>What if you scaled your WhatsApp volume?</p>
+
+            <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
+              <input type="range" min={50} max={300} step={10} value={simScale} onChange={e=>setSimScale(+e.target.value)}
+                style={{
+                  flex:1,height:6,borderRadius:3,outline:"none",cursor:"pointer",
+                  WebkitAppearance:"none",appearance:"none",
+                  background:`linear-gradient(to right, ${T.green} ${((simScale-50)/250)*100}%, ${T.surfaceHover} ${((simScale-50)/250)*100}%)`,
+                }}/>
+              <span style={{
+                fontFamily:T.fontDisplay,fontWeight:800,fontSize:22,color:simScale===100?T.textMuted:T.green,
+                minWidth:60,textAlign:"right",
+              }}>{simScale}%</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:T.textLight,fontFamily:T.fontMono,marginTop:-10,marginBottom:16,padding:"0 2px"}}>
+              <span>50%</span><span>100%</span><span>200%</span><span>300%</span>
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:10}}>
+              {[
+                {l:"Revenue",v:dm(sim.revenue),d:sim.deltaRev,fmtD:v=>(v>=0?"+":"-")+dm(Math.abs(v)),good:true},
+                {l:"Conversions / Mo",v:fmt(Math.round(sim.conversions)),d:sim.deltaConv,fmtD:v=>(v>=0?"+":"")+fmt(v),good:true},
+                {l:"ROI",v:sim.roi.toFixed(1)+"\u00D7",d:sim.deltaRoi,fmtD:v=>(v>=0?"+":"")+v.toFixed(1)+"\u00D7",good:true},
+                {l:"Monthly Spend",v:dm(sim.spend),d:sim.deltaSpend,fmtD:v=>(v>=0?"+":"-")+dm(Math.abs(v)),good:false},
+              ].map((m,i)=>{
+                const up=m.d>0,dn=m.d<0;
+                const clr=m.d===0?T.textLight:m.good?(up?T.green:"#f87171"):(up?"#f87171":T.green);
+                return(
+                <div key={i} style={{background:"rgba(255,255,255,0.06)",borderRadius:T.radiusXs,padding:"12px 14px",textAlign:"center"}}>
+                  <div style={{fontSize:10,color:T.textMuted,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.04em"}}>{m.l}</div>
+                  <div style={{fontSize:20,fontWeight:800,fontFamily:T.fontDisplay,color:m.good?T.green:T.textMuted}}>{m.v}</div>
+                  {simScale!==100&&<div style={{fontSize:11,fontFamily:T.fontMono,marginTop:4,color:clr}}>{m.fmtD(m.d)}</div>}
+                </div>
+              )})}
+            </div>
+
+            {simScale!==100&&<p style={{fontSize:12,lineHeight:1.6,color:T.textMuted,margin:"14px 0 0",padding:"12px 14px",background:"rgba(255,255,255,0.03)",borderRadius:T.radiusXs,border:`1px solid ${T.borderLight}`}}>
+              Scaling to <strong style={{color:"#fff"}}>{simScale}%</strong> ({fmt(sim.messages)} msgs) {sim.deltaRev>=0?"increases":"decreases"} revenue by <strong style={{color:T.green}}>{dm(Math.abs(sim.deltaRev))}/mo</strong> for <strong style={{color:"#fff"}}>{dm(Math.abs(sim.deltaSpend))}</strong> {sim.deltaSpend>=0?"more":"less"} spend.
+              {bspMo>0&&simScale>100&&` ROI improves because the ${dm(bspMo)} BSP fee is spread across more messages.`}
+            </p>}
+          </div>}
 
         </div>}
 
