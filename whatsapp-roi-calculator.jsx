@@ -1499,11 +1499,11 @@ export default function App(){
             <p style={{fontSize:12,color:T.textMuted,marginBottom:16,marginTop:4}}>What if you scaled your WhatsApp volume?</p>
 
             <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:16}}>
-              <input type="range" min={50} max={300} step={10} value={simScale} onChange={e=>setSimScale(+e.target.value)}
+              <input type="range" min={10} max={300} step={10} value={simScale} onChange={e=>setSimScale(+e.target.value)}
                 style={{
                   flex:1,height:6,borderRadius:3,outline:"none",cursor:"pointer",
                   WebkitAppearance:"none",appearance:"none",
-                  background:`linear-gradient(to right, ${T.green} ${((simScale-50)/250)*100}%, ${T.surfaceHover} ${((simScale-50)/250)*100}%)`,
+                  background:`linear-gradient(to right, ${T.green} ${((simScale-10)/290)*100}%, ${T.surfaceHover} ${((simScale-10)/290)*100}%)`,
                 }}/>
               <span style={{
                 fontFamily:T.fontDisplay,fontWeight:800,fontSize:22,color:simScale===100?T.textMuted:T.green,
@@ -1511,7 +1511,7 @@ export default function App(){
               }}>{simScale}%</span>
             </div>
             <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:T.textLight,fontFamily:T.fontMono,marginTop:-10,marginBottom:16,padding:"0 2px"}}>
-              <span>50%</span><span>100%</span><span>200%</span><span>300%</span>
+              <span>10%</span><span>100%</span><span>200%</span><span>300%</span>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:10}}>
